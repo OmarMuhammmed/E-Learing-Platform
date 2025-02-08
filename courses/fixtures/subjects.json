@@ -1,0 +1,42 @@
+[
+  {
+    "model": "courses.subject",
+    "pk": 1,
+    "fields": {
+      "title": "Backend Engineering",
+      "slug": "backend-engineering"
+    }
+  },
+  {
+    "model": "courses.subject",
+    "pk": 2,
+    "fields": {
+      "title": "Frontend Engineering",
+      "slug": "frontend-engineering"
+    }
+  },
+  {
+    "model": "courses.subject",
+    "pk": 3,
+    "fields": {
+      "title": "Devops Engineering",
+      "slug": "devops-engineering"
+    }
+  },
+  {
+    "model": "courses.subject",
+    "pk": 4,
+    "fields": {
+      "title": "Cloud Engineering",
+      "slug": "cloud-engineering"
+    }
+  },
+  {
+    "model": "courses.subject",
+    "pk": 5,
+    "fields": {
+      "title": "Mobile Engineering",
+      "slug": "mobile-engineering"
+    }
+  }
+]
