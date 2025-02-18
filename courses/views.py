@@ -1,14 +1,17 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView  
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy 
-from .models import Course, Module, Content
+from .models import Course, Module, Content, Subject
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.base import View, TemplateResponseMixin
 from .forms import ModuleFormSet
 from django.forms.models import modelform_factory
 from django.apps import apps
 from braces.views import CsrfExemptMixin, JSONResponseMixin
+from django.db.models import Count
+from students.forms import CourseEnrollForm
 
 # ----- Mixin-Based Architecture -----
 class ManageCourseListView(ListView):
@@ -28,7 +31,7 @@ class OwnerMixin:
         return qs.filter(owner=self.request.user)
 
 class OwnerEditMixin:
-    """ Mixin to add a user to owner when add a new course """
+    """ Mixin to make user owner when add a new course """
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)    
@@ -41,7 +44,7 @@ class OwnerCourseMixin(OwnerMixin, LoginRequiredMixin, PermissionRequiredMixin):
 class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
     template_name = 'courses/manage/course/form.html'
 
-# ----- AppViews ----- 
+# ----- CMSAppViews ----- 
 class ManageCourseListView(OwnerCourseMixin, ListView):
     template_name = 'courses/manage/course/list.html'
     permission_required = 'courses.view_course'
@@ -137,14 +140,15 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
                                         'object': self.object})
     
 class ContentDeleteView(View):
-    def post(self, request, id):
+    def post(self, request, module_id, model_name, id):
         content = get_object_or_404(Content, 
                                     id=id, 
                                     module__course__owner=request.user)  
         module = content.module
-        content.item.delete()
+        if hasattr(content, 'item') and content.item:
+            content.item.delete()
         content.delete()
-        return redirect('module_content_list', module_id=module.id)  
+        return redirect('module_content_list', module_id=module.id)
     
 class ModuleContentListView(TemplateResponseMixin, View):
     template_name = 'courses/manage/module/content_list.html'
@@ -162,10 +166,41 @@ class ModuleOrderView(CsrfExemptMixin, JSONResponseMixin, View):
 
         return self.render_json_response({'saved': 'OK'})    
     
-
 class ContentOrderView(CsrfExemptMixin, JSONResponseMixin, View):    
     def post(self, request):
         for id, order in self.request_json.items():
             Content.objects.filter(id=id, module__course__owner=request.user).update(order=order)
 
         return self.render_json_response({'saved': 'OK'})
+
+# --- AppViews ---
+class CourseListView(TemplateResponseMixin, View):
+    model = Course
+    template_name = 'courses/course/list.html'
+
+    def get(self, request, subject=None):
+        subjects = Subject.objects.annotate(
+            total_courses = Count('courses')
+        )     
+        courses = Course.objects.annotate(
+            total_modules= Count('modules')
+        )
+
+        if subject:
+            subject = get_object_or_404(Subject, slug=subject)
+            courses - courses.filter(subject=subject)
+
+        return self.render_to_response({'subjects': subjects,
+                                        'subject': subject,
+                                        'courses': courses})
+
+class CourseDetailView(DetailView):
+    model = Course  
+    template_name = 'courses/course/detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context ['enroll_form'] = CourseEnrollForm(initial={'course': self.object})
+        return context
+    
+

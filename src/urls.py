@@ -3,6 +3,7 @@ from django.urls import include, path
 from django.conf import settings 
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views 
+from courses.views import CourseListView
 
 # template_name='account/login.html'
 
@@ -11,8 +12,13 @@ urlpatterns = [
         name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), 
         name='logout'),     
+    path('', CourseListView.as_view(), 
+        name='course_list'),
+        
     path('admin/', admin.site.urls),
     path('course/', include('courses.urls')),
+    path('students/', include('students.urls')),
+
 ]
 
 if settings.DEBUG:
