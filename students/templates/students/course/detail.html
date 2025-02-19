@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% comment %} {% load cache %} {% endcomment %}
+{% load cache %}
 
 {% block title %}
   {{ object.title }}
@@ -28,13 +28,13 @@
     </ul>
   </div>
   <div class="module">
-    {% comment %} {% cache 600 module_contents module %} {% endcomment %}
+    {% cache 600 module_contents module %}
       {% for content in module.contents.all %}
         {% with item=content.item %}
           <h2>{{ item.title }}</h2>
           {{ item.render }}
         {% endwith %}
       {% endfor %}
-    {% comment %} {% endcache %} {% endcomment %}
+    {% endcache %}
   </div>
 {% endblock %}

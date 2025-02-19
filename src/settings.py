@@ -18,6 +18,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -34,9 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # libs
     'embed_video',
+    'debug_toolbar',
+    'redisboard',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,6 +83,12 @@ DATABASES = {
     }
 }
 
+CACHES = {
+'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+        }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
