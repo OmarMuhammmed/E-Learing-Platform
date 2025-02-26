@@ -28,12 +28,14 @@ INSTALLED_APPS = [
     # apps 
     'students',
     'courses',
+    'chat' , 
     # default django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne', # wbsocket
     'django.contrib.staticfiles',
     # libs
     'rest_framework',
@@ -84,6 +86,27 @@ DATABASES = {
     }
 }
 
+# config memcached
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',  # use PyMemcacheCache
+#         'LOCATION': '127.0.0.1:11211',  # specify the Memcached server location
+#     }
+# }
+
+# CONFIG WEBSOCKET
+ASGI_APPLICATION = 'src.asgi.application' # path asgi.py file 
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379/1)],
+        },
+    },
+}
+
+# CONFIG CACHE REDIS
 CACHES = {
 'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',

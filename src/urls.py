@@ -19,6 +19,7 @@ urlpatterns = [
     path('course/', include('courses.urls')),
     path('students/', include('students.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
+    path('chat/', include('chat.urls', namespace='chat')),
     # API
     path('api/', include('courses.api.urls', namespace='api')),
 
