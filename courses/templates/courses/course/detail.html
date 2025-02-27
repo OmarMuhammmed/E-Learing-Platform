@@ -24,10 +24,10 @@
           {% csrf_token %}
           <input type="submit" value="Enroll now">
         </form>
-      {% else %}
-        <a href="{% url 'student_registration' %}" class="button">
+       {% else %}
+        <a href="{% url 'student_registeration' %}" class="button">
           Register to enroll
-        </a>
+        </a> 
       {% endif %} 
     </div>
   {% endwith %}
