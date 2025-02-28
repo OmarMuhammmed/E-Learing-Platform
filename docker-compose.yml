@@ -16,13 +16,17 @@ services:
 
   web:
     build: .
-    command: ["./wait-for-it.sh", "db:5432", "--",
-              "uwsgi", "--ini", "/code/config/uwsgi/uwsgi.ini"] 
+    command: >
+      /bin/bash -c "
+      mkdir -p /code/run &&
+      chmod 777 /code/run &&
+      python manage.py collectstatic --noinput &&
+      ./wait-for-it.sh db:5432 --
+      uwsgi --ini /code/config/uwsgi/uwsgi.ini
+      "
     restart: always
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=src.settings.prod
       - POSTGRES_DB=postgres
@@ -36,7 +40,7 @@ services:
     image: nginx:latest
     restart: always
     volumes:
-    - ./config/nginx:/etc/nginx/templates
+    - ./config/nginx:/etc/nginx/conf.d 
     - .:/code
     ports:
     - "80:80"    

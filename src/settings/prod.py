@@ -20,6 +20,7 @@ CHANNEL_LAYERS['default']['CONFIG']['hosts'] = [REDIS_URL]
 
 ADMINS = [('Admin', 'amorey2006@gmail.com')]
 
-ALLOWED_HOSTS =  ['*']
+ALLOWED_HOSTS =  ['www.elearingplatform.com', 'elearingplatform.com']
+
 
 # Serve static files using Whitenoise
